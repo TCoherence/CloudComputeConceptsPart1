@@ -260,26 +260,26 @@ bool MP1Node::recvCallBack(void *env, char *data, int size ) {
         decodeGossipInfo(gossipInfoMsg, &membershipList);
         UpdateMembershipList(&membershipList);
 
-#ifdef DEBUGLOG
-        // log updated membershiplist
-        log->LOG(&memberNode->addr, "Updated memberlist after receive GOSSIP");
-        for ( int i = 0; i < memberNode->memberList.size(); i++ ) {
-            log->LOG(&memberNode->addr, "info[GOSSIP]:(id, port, heartbeat):(%d,%d,%d)",
-                            (memberNode->memberList)[i].id,
-                            (memberNode->memberList)[i].port,
-                            (memberNode->memberList)[i].heartbeat);
-        }
-#endif
+// #ifdef DEBUGLOG
+//         // log updated membershiplist
+//         log->LOG(&memberNode->addr, "Updated memberlist after receive GOSSIP");
+//         for ( int i = 0; i < memberNode->memberList.size(); i++ ) {
+//             log->LOG(&memberNode->addr, "info[GOSSIP]:(id, port, heartbeat):(%d,%d,%d)",
+//                             (memberNode->memberList)[i].id,
+//                             (memberNode->memberList)[i].port,
+//                             (memberNode->memberList)[i].heartbeat);
+//         }
+// #endif
     }
     // invalid msg, log and exit
     else {
-#ifdef DEBUGLOG
-        log->LOG(&memberNode->addr, "Received an invalid msg...");
-#endif
+// #ifdef DEBUGLOG
+//         log->LOG(&memberNode->addr, "Received an invalid msg...");
+// #endif
     }
-#ifdef DEBUGLOG
-        log->LOG(&memberNode->addr, "Received an msg: %d.", msg->msgType);
-#endif
+// #ifdef DEBUGLOG
+//         log->LOG(&memberNode->addr, "Received an msg: %d.", msg->msgType);
+// #endif
     return true;
 }
 
@@ -319,20 +319,20 @@ void MP1Node::nodeLoopOps() {
     int msgSize;
     GenerateGossipInfoMsg(&gossipInfoMsg, &msgSize, GOSSIPINFO);
 
-#ifdef DEBUGLOG
-    for (int i = 0; i < gossipInfoMsg->numEntries; i++ ) {
-        // output msg info
-        int id;
-        short port;
-        long heartbeat;
-        MemberListInfo *ptr;
-        ptr = (MemberListInfo *)((char *)gossipInfoMsg + sizeof(GossipInfoHdr) + (sizeof(MemberListInfo) * i));
-        id = ptr->id;
-        port = ptr->port;
-        heartbeat = ptr->heartbeat;
-        log->LOG(&memberNode->addr, "GOSSIP_SEND: id, port, heartbeat, timestamp = %d,%d,%d", id, port, heartbeat,gossipInfoMsg->timestamp);
-    }
-#endif
+// #ifdef DEBUGLOG
+//     for (int i = 0; i < gossipInfoMsg->numEntries; i++ ) {
+//         // output msg info
+//         int id;
+//         short port;
+//         long heartbeat;
+//         MemberListInfo *ptr;
+//         ptr = (MemberListInfo *)((char *)gossipInfoMsg + sizeof(GossipInfoHdr) + (sizeof(MemberListInfo) * i));
+//         id = ptr->id;
+//         port = ptr->port;
+//         heartbeat = ptr->heartbeat;
+//         log->LOG(&memberNode->addr, "GOSSIP_SEND: id, port, heartbeat, timestamp = %d,%d,%d", id, port, heartbeat,gossipInfoMsg->timestamp);
+//     }
+// #endif
 
 
     // false random at this moment
@@ -340,12 +340,12 @@ void MP1Node::nodeLoopOps() {
         int next = (rand() % memberNode->nnb) + 1;
         Address toAddress = retrieveMemberAddress(memberNode->memberList[next]);
         emulNet->ENsend(&memberNode->addr, &toAddress, (char *)gossipInfoMsg, msgSize);
-#ifdef DEBUGLOG
-        std::ostringstream out;
-        out << memberNode->addr.getAddress() << " to " << toAddress.getAddress();
-        // std::cout << out.str();
-        log->LOG(&memberNode->addr, out.str().c_str());
-#endif
+// #ifdef DEBUGLOG
+//         std::ostringstream out;
+//         out << memberNode->addr.getAddress() << " to " << toAddress.getAddress();
+//         // std::cout << out.str();
+//         log->LOG(&memberNode->addr, out.str().c_str());
+// #endif
         
     }
 
@@ -433,11 +433,11 @@ bool MP1Node::hasFailed(MemberListEntry memberListEntry) {
 }
 
 bool MP1Node::needRemove(MemberListEntry memberListEntry) {
-#ifdef DEBUGLOG
-    std::ostringstream out;
-    out << par->getcurrtime() << "-" << memberListEntry.gettimestamp();
-    log->LOG(&memberNode->addr, out.str().c_str());
-#endif  
+// #ifdef DEBUGLOG
+//     std::ostringstream out;
+//     out << par->getcurrtime() << "-" << memberListEntry.gettimestamp();
+//     log->LOG(&memberNode->addr, out.str().c_str());
+// #endif  
     return (par->getcurrtime() - memberListEntry.gettimestamp()) > (TFAIL + TREMOVE);
 }
 
@@ -472,24 +472,24 @@ void MP1Node::decodeGossipInfo(GossipInfoHdr *gossipInfoHdr, vector<MemberListEn
         id = ptr->id;
         port = ptr->port;
         heartbeat = ptr->heartbeat;
-#ifdef DEBUGLOG
-        log->LOG(&memberNode->addr, "GOSSIP_RECEIVE: id, port, heartbeat, timestamp = %d,%d,%d,%d", id, port, heartbeat,timestamp);
-#endif
+// #ifdef DEBUGLOG
+//         log->LOG(&memberNode->addr, "GOSSIP_RECEIVE: id, port, heartbeat, timestamp = %d,%d,%d,%d", id, port, heartbeat,timestamp);
+// #endif
         (*memberList).push_back(MemberListEntry(id, port, heartbeat, 0));
     }
 }
 
 void MP1Node::UpdateMembershipList(vector<MemberListEntry> *memberList) {
 
-#ifdef DEBUGLOG
-    for (int i = 0; i < memberList->size(); i++) {
-        int id = *(int *)(memberNode->addr.addr);
-        log->LOG(&memberNode->addr, "info_update:GOSSIP:(id, port, heartbeat):(%d,%d,%d)",
-                        (*memberList)[i].id,
-                        (*memberList)[i].port,
-                        (*memberList)[i].heartbeat);
-    }
-#endif
+// #ifdef DEBUGLOG
+//     for (int i = 0; i < memberList->size(); i++) {
+//         int id = *(int *)(memberNode->addr.addr);
+//         log->LOG(&memberNode->addr, "info_update:GOSSIP:(id, port, heartbeat):(%d,%d,%d)",
+//                         (*memberList)[i].id,
+//                         (*memberList)[i].port,
+//                         (*memberList)[i].heartbeat);
+//     }
+// #endif
 
 
     for (int i = 0; i < memberList->size(); i++) {
